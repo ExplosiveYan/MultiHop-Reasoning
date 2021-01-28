@@ -162,7 +162,6 @@ class GraphSearchPolicy(nn.Module):
         self.path = [self.path_encoder(init_action_embedding, (init_h, init_c))[1]]
 
     def update_path(self, action, kg, offset=None):
-        # parameter
         """
         Once an action was selected, update the action history.
         :param action (r, e): (Variable:batch) indices of the most recent action

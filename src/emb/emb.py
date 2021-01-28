@@ -55,7 +55,7 @@ class EmbeddingBasedMethod(LFramework):
         return loss_dict
 
     def predict(self, mini_batch, verbose=False):
-        kg, mdl = self.kg, self.mdl
+        kg, mdl = self.kg, self.F
         e1, e2, r = self.format_batch(mini_batch)
         if self.model == 'hypere':
             pred_scores = mdl.forward(e1, r, kg, [self.secondary_kg])

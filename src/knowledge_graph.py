@@ -87,8 +87,12 @@ class KnowledgeGraph(nn.Module):
         if self.args.model.startswith('point'): 
             # Base graph structure used for training and test
             adj_list_path = os.path.join(data_dir, 'adj_list.pkl')
+
+            # construct the Graph Neural Network (DGL) structure by this file "adj_list.pkl"
+            # import dgl
+
             """
-            adj_list.pkl中一部分内容， 邻居表示文件
+            adj_list.pkl中一部分内容， 邻居表示文件(二进制文件, rb)
             [当前节点][关系][关系连接的节点（可能存在多个节点与当前节点存在相同的关系）]
             596: defaultdict(None, {17: {612, 901, 934, 486, 424, 841, 874, 1065, 457, 1165, 238, 1363, 759, 636, 1117}, 
             13: {4321, 4002, 1667, 4097, 5417, 239, 5394, 1717, 287}, 
@@ -127,6 +131,7 @@ class KnowledgeGraph(nn.Module):
                 out_degrees[e1] += len(self.adj_list[e1][r])
                 # out degrees represent the number of the e1's outgoing edges.
                 # can utilize this parameter "out_degrees"
+
         print("Sanity check: maximum out degree: {}".format(max(out_degrees.values())))
         print('Sanity check: {} facts in knowledge graph'.format(num_facts))
 
@@ -219,6 +224,8 @@ class KnowledgeGraph(nn.Module):
                 self.unique_r_space = vectorize_unique_r_space(unique_r_space_list, max_num_unique_rs)
 
     def load_all_answers(self, data_dir, add_reversed_edges=False):
+        # exists two kinds of dictionary, d[object][rel][subject] and d[subject][rel][object]
+
         def add_subject(e1, e2, r, d):
             if not e2 in d:
                 d[e2] = {}
@@ -256,6 +263,8 @@ class KnowledgeGraph(nn.Module):
                         add_subject(e1, e2, r, train_subjects)
                         add_object(e1, e2, r, train_objects)
                         if add_reversed_edges:
+                            # if set Parameter "add_reversed_edges", it will add reversed edges to the graph list.
+                            # 可以将relation 做分类 分成两类 origin_rel, reverse_rel, 可以用奇偶性来进行区别。
                             add_subject(e2, e1, self.get_inv_relation_id(r), train_subjects)
                             add_object(e2, e1, self.get_inv_relation_id(r), train_objects)
                     if file_name in ['raw.kb', 'train.triples', 'dev.triples']:
@@ -330,6 +339,11 @@ class KnowledgeGraph(nn.Module):
     def get_inv_relation_id(self, r_id):
         return r_id + 1
 
+    # why dropout the embeddings of entity and relations !!!!!!!  fuck dropout
+    # do some experiment without dropout the embeddings of entity and relations !
+
+    # In file "emb.py" : for param_name in ['kg.entity_embeddings.weight', 'kg.relation_embeddings.weight']:
+    # the embeddings of [entity, relations] STORE in ['kg.entity_embeddings.weight', 'kg.relation_embeddings.weight']
     def get_all_entity_embeddings(self):
         return self.EDropout(self.entity_embeddings.weight)
 

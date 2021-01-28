@@ -72,7 +72,9 @@ class RewardShapingPolicyGradient(PolicyGradient):
                 real_reward = self.fn.forward_fact(e1, r, pred_e2, self.fn_kg, [self.fn_secondary_kg]).squeeze(1)
 
                 """
-                在此处添加TransE 的奖励函数， 离目标节点越近， 则奖励越接近于 1
+                在此处添加TransE 的奖励函数， 
+                不是在此处实现 reward function， 只是调用相应模型的 forward_fact 函数
+                离目标节点越近， 则奖励越接近于 1
                 (head, current) 到 (head, query)上的投影
                 elif self.fn_model == 'PTransE':
                     real_reward = self.fn.forward_fact(e1, r, pred_e2, self.fn_kg, path_trace).squeeze(1)
